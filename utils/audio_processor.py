@@ -5,15 +5,23 @@ import yt_dlp
 DOWNLOAD_DIR = "downloads"
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-
 def download_yt_audio(url: str) -> str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
 
-    base_opts = {
+    ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": output_path,
-        "js_runtimes": {"node": {}},
-        "remote_components": ["ejs:github"],
+        # 1. Use mobile client to bypass datacenter 403 blocks & JS challenge
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "web"]
+            }
+        },
+        # 2. Add realistic user-agent header
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
+        },
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
@@ -22,24 +30,14 @@ def download_yt_audio(url: str) -> str:
             }
         ],
         "quiet": True,
+        "no_warnings": False,
     }
 
-    # Try downloading with local Firefox cookies if available.
-    # On cloud deployments (like Streamlit Community Cloud) where Firefox is absent,
-    # fallback gracefully to standard download.
-    try:
-        cookie_opts = dict(base_opts)
-        cookie_opts["cookiesfrombrowser"] = ("firefox",)
-        with yt_dlp.YoutubeDL(cookie_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            base, _ = os.path.splitext(ydl.prepare_filename(info))
-            return f"{base}.mp3"
-    except Exception:
-        with yt_dlp.YoutubeDL(base_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            base, _ = os.path.splitext(ydl.prepare_filename(info))
-            return f"{base}.mp3"
-
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+        base, _ = os.path.splitext(ydl.prepare_filename(info))
+        filename = f"{base}.mp3"
+    return filename
 
 def convert_to_wav(input_path: str) -> str:
     """Convert any local file to standard audio format."""

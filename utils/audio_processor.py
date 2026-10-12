@@ -27,17 +27,13 @@ def download_yt_audio(url: str) -> str:
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": output_path,
-        # 1. Enable Node.js installed via packages.txt
+        # 1. Enable Node runtime from packages.txt
         "js_runtimes": {"node": {}},
-        # 2. Prefer clients that avoid heavy web challenges
+        # 2. Use web/mweb if cookies exist, otherwise fallback to mobile clients
         "extractor_args": {
             "youtube": {
-                "player_client": ["ios", "android"],
+                "player_client": ["web", "mweb"] if cookie_path else ["android", "ios"]
             }
-        },
-        "http_headers": {
-            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-            "Accept-Language": "en-US,en;q=0.9",
         },
         "postprocessors": [
             {
@@ -60,10 +56,8 @@ def download_yt_audio(url: str) -> str:
             filename = f"{base}.mp3"
         return filename
     finally:
-        # Clean up temporary cookie file
         if cookie_path and os.path.exists(cookie_path):
             os.remove(cookie_path)
-
 
 def convert_to_wav(input_path: str) -> str:
     """Convert any local file to standard audio format."""

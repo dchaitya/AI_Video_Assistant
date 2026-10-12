@@ -1,0 +1,27 @@
+# Environment variables & secrets (CRITICAL: Never commit to GitHub)
+.env
+*.env
+.streamlit/secrets.toml
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache & build
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+
+# Project generated media & local databases
+downloads/
+vector_db/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+

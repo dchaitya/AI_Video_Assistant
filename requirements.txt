@@ -1,0 +1,23 @@
+# ── Audio / Video Acquisition & Processing ──
+yt-dlp>=2024.4.9
+pydub>=0.25.1
+
+# ── Speech-to-Text & LLM Orchestration (Groq) ──
+groq>=0.11.0
+langchain-groq>=0.1.0
+langchain>=0.2.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+
+# ── Vector Store & Embeddings for RAG ──
+chromadb>=0.5.0
+sentence-transformers>=3.0.0
+torch>=2.2.0
+
+# ── Web Application UI ──
+streamlit>=1.35.0
+
+# ── Utilities & Configuration ──
+python-dotenv>=1.0.0
+numpy>=1.26.0
+requests>=2.32.0

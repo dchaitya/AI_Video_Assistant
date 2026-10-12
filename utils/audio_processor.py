@@ -25,25 +25,24 @@ def download_yt_audio(url: str) -> str:
     cookie_path = get_cookie_file_path()
 
     ydl_opts = {
-        "format": "bestaudio/best",
-        "outtmpl": output_path,
-        # 1. Enable Node runtime from packages.txt
-        "js_runtimes": {"node": {}},
-        # 2. Use web/mweb if cookies exist, otherwise fallback to mobile clients
-        "extractor_args": {
-            "youtube": {
-                "player_client": ["web", "mweb"] if cookie_path else ["android", "ios"]
-            }
-        },
-        "postprocessors": [
-            {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "128",
-            }
-        ],
-        "quiet": False,
-        "no_warnings": False,
+    "format": "bestaudio/best",
+    "outtmpl": output_path,
+    "js_runtimes": {"node": {}},
+    "extractor_args": {
+        "youtube": {
+            # tv and mweb bypass the web bot-block and support authenticated sessions
+            "player_client": ["tv", "mweb", "web"],
+        }
+    },
+    "postprocessors": [
+        {
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "128",
+        }
+    ],
+    "quiet": False,
+    "no_warnings": False,
     }
 
     if cookie_path:
